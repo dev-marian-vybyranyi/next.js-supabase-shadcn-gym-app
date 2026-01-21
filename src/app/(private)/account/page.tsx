@@ -7,6 +7,8 @@ import usersGlobalStore, {
 } from "@/global-store/users-store";
 import dayjs from "dayjs";
 import Link from "next/link";
+import React from "react";
+import AdminDashboard from "./_components/admin-dashboard";
 
 function AccountPage() {
   const { user, currentSubscription } = usersGlobalStore() as IUsersGlobalStore;
@@ -17,6 +19,10 @@ function AccountPage() {
       <p className="text-sm font-semibold">{value}</p>
     </div>
   );
+
+  if (user?.is_admin) {
+    return <AdminDashboard />;
+  }
 
   return (
     <div>
