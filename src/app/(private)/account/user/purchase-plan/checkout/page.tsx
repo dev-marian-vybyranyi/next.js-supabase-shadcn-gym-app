@@ -1,6 +1,7 @@
 "use client";
 
 import { getStripePaymentIntent } from "@/actions/payments";
+import { createNewSubscription } from "@/actions/subscriptions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import PageTitle from "@/components/ui/page-title";
@@ -8,17 +9,43 @@ import {
   IPlansGlobalStore,
   plansGlobalStore,
 } from "@/global-store/plans-store";
+import usersGlobalStore, {
+  IUsersGlobalStore,
+} from "@/global-store/users-store";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
 import dayjs from "dayjs";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { toast } from "react-hot-toast";
+import toast from "react-hot-toast";
+import CheckoutForm from "./_components/checkout-form";
 
-const CheckoutPage = () => {
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "",
+);
+
+function ChecoutPage() {
   const { selectedPaymentPlan, setSelectedPaymentPlan } =
     plansGlobalStore() as IPlansGlobalStore;
   const [startDate, setStartDate] = useState(dayjs().format("YYYY-MM-DD"));
   const [loading, setLoading] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [showCheckoutForm, setShowCheckoutForm] = useState(false);
+  const { user } = usersGlobalStore() as IUsersGlobalStore;
+  const router = useRouter();
+
+  const renderProperty = (key: string, value: any) => {
+    try {
+      return (
+        <div className="flex justify-between items-center">
+          <span className="text-gray-500 text-sm">{key}</span>
+          <span className="text-gray-700 font-semibold text-sm">{value}</span>
+        </div>
+      );
+    } catch (error) {
+      return <></>;
+    }
+  };
 
   const endDate = useMemo(() => {
     return dayjs(startDate)
@@ -33,7 +60,7 @@ const CheckoutPage = () => {
         selectedPaymentPlan?.paymentPlan?.price,
       );
       if (response.success) {
-        setClientSecret(response.data ?? null);
+        setClientSecret(response.data);
         setShowCheckoutForm(true);
       } else {
         throw new Error(response.message);
@@ -45,18 +72,36 @@ const CheckoutPage = () => {
     }
   };
 
-  const renderProperty = (key: string, value: any) => {
+  const options = {
+    clientSecret: clientSecret!,
+  };
+
+  const onPaymentSuccess = async (paymentId: string) => {
     try {
-      return (
-        <div className="flex justify-between items-center">
-          <span className="text-gray-500 text-sm">{key}</span>
-          <span className="text-gray-700 font-semibold text-sm">{value}</span>
-        </div>
-      );
+      const payload = {
+        user_id: user?.id,
+        plan_id: selectedPaymentPlan?.mainPlan?.id,
+        start_date: startDate,
+        end_date: endDate,
+        payment_id: paymentId,
+        amount: Number(selectedPaymentPlan?.paymentPlan?.price),
+        total_duration: Number(selectedPaymentPlan?.paymentPlan?.duration),
+        is_active: true,
+      };
+      const response = await createNewSubscription(payload);
+      if (response.success) {
+        toast.success(
+          "Congratulations! Your payment was successful , Your subscription has been activated",
+        );
+        router.push("/account/user/subscriptions");
+      } else {
+        throw new Error(response.message);
+      }
     } catch (error) {
-      return <></>;
+      toast.error("An error occurred while processing your payment");
     }
   };
+
   return (
     <div>
       <PageTitle title="Checkout" />
@@ -100,8 +145,18 @@ const CheckoutPage = () => {
           <p>Please select a payment plan</p>
         </div>
       )}
+
+      {showCheckoutForm && clientSecret && (
+        <Elements stripe={stripePromise} options={options}>
+          <CheckoutForm
+            showCheckoutForm={showCheckoutForm}
+            setShowCheckoutForm={setShowCheckoutForm}
+            onPaymentSuccess={onPaymentSuccess}
+          />
+        </Elements>
+      )}
     </div>
   );
-};
+}
 
-export default CheckoutPage;
+export default ChecoutPage;
