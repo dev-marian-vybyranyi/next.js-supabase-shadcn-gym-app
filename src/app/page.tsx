@@ -5,15 +5,17 @@ import {
   Sheet,
   SheetContent,
   SheetHeader,
-  SheetTitle
+  SheetTitle,
 } from "@/components/ui/sheet";
 import { SignIn, SignUp } from "@clerk/nextjs";
 import { ArrowDownToLine } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
+import React, { Suspense } from "react";
 import PlansList from "./_components/plans-list";
+import Spinner from "@/components/ui/spinner";
 
-function Homepage() {
+function HomeContent() {
   const [openSheet, setOpenSheet] = useState(false);
   const queryStrings = useSearchParams();
   const form = queryStrings.get("form");
@@ -85,6 +87,14 @@ function Homepage() {
         </SheetContent>
       </Sheet>
     </div>
+  );
+}
+
+function Homepage() {
+  return (
+    <Suspense fallback={<Spinner parentHeight="100vh" />}>
+      <HomeContent />
+    </Suspense>
   );
 }
 
