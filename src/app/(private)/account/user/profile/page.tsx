@@ -6,9 +6,11 @@ import usersGlobalStore, {
 
 const UserProfilePage = () => {
   const { user } = usersGlobalStore() as IUsersGlobalStore;
-  return <div>
-    <h1>Welcome {user?.name}</h1>
-  </div>;
+  return (
+    <div>
+      <h1>Welcome {user?.name}</h1>
+    </div>
+  );
 };
 
 export default UserProfilePage;

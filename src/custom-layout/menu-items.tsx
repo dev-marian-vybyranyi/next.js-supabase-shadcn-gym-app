@@ -1,20 +1,20 @@
 import { Button } from "@/components/ui/button";
 import {
-    Sheet,
-    SheetContent,
-    SheetHeader,
-    SheetTitle,
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
 } from "@/components/ui/sheet";
 import { IUser } from "@/interfaces";
 import { SignOutButton } from "@clerk/nextjs";
 import {
-    FolderKanban,
-    Heart,
-    Home,
-    List,
-    LogOut,
-    ShieldCheck,
-    User2,
+  FolderKanban,
+  Heart,
+  Home,
+  List,
+  LogOut,
+  ShieldCheck,
+  User2,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { Dispatch, SetStateAction } from "react";

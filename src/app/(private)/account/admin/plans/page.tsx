@@ -2,7 +2,6 @@ import { getAllPlans } from "@/actions/plans";
 import { Button } from "@/components/ui/button";
 import PageTitle from "@/components/ui/page-title";
 import Link from "next/link";
-// import PlansTable from "./_components/plans-table";
 
 async function AdminPlansPage() {
   const response: any = await getAllPlans();
@@ -18,8 +17,6 @@ async function AdminPlansPage() {
           <Link href="/account/admin/plans/add">Add Plan</Link>
         </Button>
       </div>
-
-      {/* <PlansTable plans={response.data} /> */}
     </div>
   );
 }

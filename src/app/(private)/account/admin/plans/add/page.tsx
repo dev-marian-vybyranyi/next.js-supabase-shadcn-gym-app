@@ -5,7 +5,7 @@ const AddPlanePage = () => {
   return (
     <div>
       <PageTitle title="Add Plan" />
-      <PlanForm formType="add" initialValues={null}/>
+      <PlanForm formType="add" initialValues={null} />
     </div>
   );
 };
