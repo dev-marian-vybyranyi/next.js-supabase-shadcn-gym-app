@@ -1,12 +1,14 @@
 import { getCurrentUserFromSupabase } from "@/actions/users";
-import { IUser } from "@/interfaces";
+import Spinner from "@/components/ui/spinner";
+import usersGlobalStore, {
+  IUsersGlobalStore,
+} from "@/global-store/users-store";
 import { ReactNode, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Header from "./header";
-import Spinner from "@/components/ui/spinner";
 
 const PrivateLayout = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<IUser | null>(null);
+  const { user, setUser } = usersGlobalStore() as IUsersGlobalStore;
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
