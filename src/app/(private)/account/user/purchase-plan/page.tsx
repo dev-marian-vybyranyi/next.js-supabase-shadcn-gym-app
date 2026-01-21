@@ -141,6 +141,7 @@ function PurchasePlanPage() {
                 </select>
 
                 <Button
+                  asChild
                   disabled={
                     !selectedPaymentPlan?.paymentPlan ||
                     selectedPaymentPlan?.mainPlan?.id !== plan.id
