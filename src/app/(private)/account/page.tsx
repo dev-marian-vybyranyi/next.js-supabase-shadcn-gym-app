@@ -1,5 +1,6 @@
 import { UserButton } from "@clerk/nextjs";
 import { currentUser } from "@clerk/nextjs/server";
+import { getCurrentUserFromSupabase } from "@/actions/users";
 
 const AccountPage = async () => {
   const result = await currentUser();
@@ -9,6 +10,8 @@ const AccountPage = async () => {
   const clerkUserId = result?.id;
   const email = result?.emailAddresses[0].emailAddress;
 
+  const response = await getCurrentUserFromSupabase();
+  console.log(response);
   return (
     <div className="p-5">
       <h1>AccountPage</h1>
