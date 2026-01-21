@@ -9,7 +9,7 @@ const PrivateLayout = ({ children }: { children: ReactNode }) => {
 
   const fetchUser = async () => {
     try {
-      const response:any = await getCurrentUserFromSupabase();
+      const response: any = await getCurrentUserFromSupabase();
       if (!response.success) {
         throw new Error(response.error);
       } else {
@@ -26,10 +26,8 @@ const PrivateLayout = ({ children }: { children: ReactNode }) => {
 
   return (
     <div>
-      <Header 
-      user={user}
-      />
-      {children}
+      <Header user={user} />
+      <div className="p-5">{children}</div>
     </div>
   );
 };
