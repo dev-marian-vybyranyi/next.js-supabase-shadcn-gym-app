@@ -1,13 +1,26 @@
+import { getPlanById } from "@/actions/plans";
 import PageTitle from "@/components/ui/page-title";
 import PlanForm from "../../_componemts/plan-form";
 
-const EditPlanePage = () => {
+interface EditPlanPageProps {
+  params: Promise<{ id: string }>;
+}
+
+async function EditPlanPage({ params }: EditPlanPageProps) {
+  const { id } = await params;
+  const response = await getPlanById(id);
+
+  if (!response.success) {
+    return <div>Plan not found</div>;
+  }
+
+  let initialValues = response.data;
   return (
     <div>
       <PageTitle title="Edit Plan" />
-      <PlanForm formType="edit" initialValues={null} />
+      <PlanForm formType="edit" initialValues={initialValues} />
     </div>
   );
-};
+}
 
-export default EditPlanePage;
+export default EditPlanPage;
