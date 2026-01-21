@@ -1,10 +1,9 @@
-import {
-  ClerkProvider
-} from "@clerk/nextjs";
+import CustomLayout from "@/custom-layout";
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
-import CustomLayout from "@/custom-layout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,7 +28,10 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" data-theme="light">
-        <body><CustomLayout>{children}</CustomLayout></body>
+        <body>
+          <CustomLayout>{children}</CustomLayout>
+          <Toaster position="top-center" reverseOrder={false} />
+        </body>
       </html>
     </ClerkProvider>
   );
