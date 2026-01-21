@@ -1,5 +1,6 @@
 "use client";
 
+import { getStripePaymentIntent } from "@/actions/payments";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import PageTitle from "@/components/ui/page-title";
@@ -9,17 +10,40 @@ import {
 } from "@/global-store/plans-store";
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
+import { toast } from "react-hot-toast";
 
 const CheckoutPage = () => {
   const { selectedPaymentPlan, setSelectedPaymentPlan } =
     plansGlobalStore() as IPlansGlobalStore;
   const [startDate, setStartDate] = useState(dayjs().format("YYYY-MM-DD"));
+  const [loading, setLoading] = useState(false);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [showCheckoutForm, setShowCheckoutForm] = useState(false);
 
   const endDate = useMemo(() => {
     return dayjs(startDate)
       .add(selectedPaymentPlan?.paymentPlan?.duration, "day")
       .format("YYYY-MM-DD");
   }, [startDate]);
+
+  const paymentIntentHandler = async () => {
+    try {
+      setLoading(true);
+      const response = await getStripePaymentIntent(
+        selectedPaymentPlan?.paymentPlan?.price,
+      );
+      if (response.success) {
+        setClientSecret(response.data ?? null);
+        setShowCheckoutForm(true);
+      } else {
+        throw new Error(response.message);
+      }
+    } catch (error) {
+      toast.error("Payment Failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const renderProperty = (key: string, value: any) => {
     try {
@@ -60,7 +84,13 @@ const CheckoutPage = () => {
 
             {startDate && renderProperty("End Date", endDate)}
 
-            <Button className="mt-7">Pay Now</Button>
+            <Button
+              className="mt-7"
+              onClick={paymentIntentHandler}
+              disabled={loading}
+            >
+              Pay Now
+            </Button>
           </div>
         </div>
       )}
